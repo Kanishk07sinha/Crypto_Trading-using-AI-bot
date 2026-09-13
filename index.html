@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusCrypto AI | Autonomous Crypto Trading & Market Intelligence Chatbot</title>
+  <meta name="description" content="AI-powered cryptocurrency trading chatbot and market intelligence sentinel. Provides real-time investment verdicts, RSI indicators, price trends, and crypto news analysis.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Real-Time Price Marquee -->
+    <header class="app-header">
+      <div class="header-top">
+        <div class="brand">
+          <div class="brand-icon">⚡</div>
+          <div class="brand-info">
+            <h1 class="brand-title">NexusCrypto <span class="brand-accent">AI</span></h1>
+            <span class="brand-subtitle">Autonomous Crypto Trading & Market Sentinel</span>
+          </div>
+        </div>
+
+        <div class="header-center">
+          <div class="view-mode-switcher">
+            <button id="modeChatBtn" class="view-btn active" data-mode="chat" title="Chat-focused view">
+              <span>💬 AI Sentinel</span>
+            </button>
+            <button id="modeSplitBtn" class="view-btn" data-mode="split" title="Split view: Chat + Live Graph">
+              <span>⚡ Split Terminal</span>
+            </button>
+            <button id="modeGraphBtn" class="view-btn" data-mode="graph" title="Full Live Trading Graph">
+              <span>📈 Live Trading Graph</span>
+            </button>
+          </div>
+          <div class="guardrail-status-pill">
+            <span class="pulse-dot-green"></span>
+            <span class="guardrail-text">Crypto Sentinel: <strong>Crypto-Only Active</strong></span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <div class="fng-badge" id="headerFngBadge" title="Current Crypto Fear & Greed Index">
+            <span class="fng-icon">🧭</span>
+            <span class="fng-text">F&G:</span>
+            <strong id="fngValue" class="fng-val">--</strong>
+            <span id="fngLabel" class="fng-state">LOADING</span>
+          </div>
+          <button id="settingsBtn" class="icon-btn" title="Settings & AI Profile">⚙️</button>
+        </div>
+      </div>
+
+      <!-- Marquee Ticker -->
+      <div class="ticker-marquee">
+        <div class="ticker-track" id="tickerTrack">
+          <div class="ticker-item"><span class="t-sym">BTC</span> <span class="t-price">$77,240</span> <span class="t-chg bull-green">+2.45%</span></div>
+          <div class="ticker-item"><span class="t-sym">ETH</span> <span class="t-price">$2,680</span> <span class="t-chg bull-green">+1.82%</span></div>
+          <div class="ticker-item"><span class="t-sym">SOL</span> <span class="t-price">$194.75</span> <span class="t-chg bull-green">+5.10%</span></div>
+          <div class="ticker-item"><span class="t-sym">BNB</span> <span class="t-price">$620.40</span> <span class="t-chg bear-red">-0.35%</span></div>
+          <div class="ticker-item"><span class="t-sym">XRP</span> <span class="t-price">$0.6120</span> <span class="t-chg bull-green">+3.15%</span></div>
+          <div class="ticker-item"><span class="t-sym">DOGE</span> <span class="t-price">$0.1425</span> <span class="t-chg bull-green">+4.20%</span></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="app-body mode-chat" id="appBody">
+      <!-- Left / Center: Chat Terminal -->
+      <section class="chat-section" id="chatSection">
+        <div class="chat-topbar">
+          <div class="bot-meta">
+            <div class="bot-avatar-wrap">
+              <span class="bot-avatar-glow"></span>
+              <div class="bot-avatar">🤖</div>
+            </div>
+            <div class="bot-meta-details">
+              <div class="bot-name">Nexus Sentinel v2.4</div>
+              <div class="bot-status"><span class="live-dot"></span> Live Binance Order Flow & RSI Connected</div>
+            </div>
+          </div>
+          <div class="chat-actions">
+            <button id="quickSplitBtn" class="header-action-pill" title="Toggle Live Trading Graph">📈 Open Live Graph</button>
+            <span class="mode-tag">Invest Timing Engine</span>
+          </div>
+        </div>
+
+        <!-- Chat messages stream -->
+        <div class="chat-messages" id="chatMessages">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Quick suggestion chips -->
+        <div class="suggestion-chips-bar">
+          <button class="suggestion-chip" id="openLiveGraphChip">📈 Open Live Trading Graph</button>
+          <button class="suggestion-chip" data-prompt="Should I invest in Bitcoin right now?">⚡ Invest in BTC now?</button>
+          <button class="suggestion-chip" data-prompt="Is Solana (SOL) a good buy or should I wait?">🔮 Solana Buy Signal</button>
+          <button class="suggestion-chip" data-prompt="Analyze Ethereum (ETH) RSI and technical indicators">📊 ETH Technicals</button>
+          <button class="suggestion-chip" data-prompt="What is the latest breaking crypto news?">📰 Breaking News</button>
+          <button class="suggestion-chip" data-prompt="What does the Fear & Greed index show?">🧭 Fear & Greed</button>
+          <button class="suggestion-chip" data-prompt="What is the recipe for chocolate cake?" title="Click to test off-topic guardrail">🛡️ Test Guardrail</button>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chat-input-wrapper">
+          <form class="chat-input-form" onsubmit="return false;">
+            <input 
+              type="text" 
+              id="userInput" 
+              class="chat-input" 
+              placeholder="Ask about crypto investment timing (e.g. 'Should I buy BTC?', 'Analyze SOL', 'Crypto news')..." 
+              autocomplete="off"
+            />
+            <button type="button" id="sendBtn" class="send-btn" title="Send message">
+              <span>Send</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </form>
+          <div class="input-footnote">
+            ⚡ Powered by real-time Binance data feeds & multi-indicator confluence. Strictly scoped to cryptocurrencies.
+          </div>
+        </div>
+      </section>
+
+      <!-- Center / Full: Dedicated Live Trading Graph Section -->
+      <section class="trading-graph-section" id="tradingGraphSection">
+        <!-- Live Graph Header & Controls -->
+        <div class="graph-topbar">
+          <div class="graph-coin-meta">
+            <div class="graph-coin-identity">
+              <span id="graphCoinSymbol" class="graph-coin-sym">BTC</span>
+              <span id="graphCoinName" class="graph-coin-name">Bitcoin / USDT</span>
+            </div>
+            <div class="graph-price-badge">
+              <span id="graphLastPrice" class="graph-price">$77,240.50</span>
+              <span id="graphPriceChange" class="graph-change bull-green">+2.45%</span>
+            </div>
+            <div class="graph-stats-cluster">
+              <div class="g-stat"><span class="g-stat-label">24h High</span><span id="graph24High" class="g-stat-val">$78,100.00</span></div>
+              <div class="g-stat"><span class="g-stat-label">24h Low</span><span id="graph24Low" class="g-stat-val">$75,400.00</span></div>
+              <div class="g-stat"><span class="g-stat-label">24h Vol</span><span id="graph24Vol" class="g-stat-val">14,230 BTC</span></div>
+            </div>
+          </div>
+
+          <!-- Timeframe & Chart Controls -->
+          <div class="graph-controls-group">
+            <div class="timeframe-selector">
+              <button class="tf-btn" data-tf="1">1m</button>
+              <button class="tf-btn" data-tf="5">5m</button>
+              <button class="tf-btn" data-tf="15">15m</button>
+              <button class="tf-btn active" data-tf="60">1H</button>
+              <button class="tf-btn" data-tf="240">4H</button>
+              <button class="tf-btn" data-tf="D">1D</button>
+            </div>
+            <div class="graph-engine-toggle">
+              <button id="engineTvBtn" class="engine-btn active" title="TradingView Real-Time Candlestick Feed">TradingView Pro</button>
+              <button id="engineAiBtn" class="engine-btn" title="AI Trade Target Overlay Chart">AI Setup Overlay</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Graph Main Frame -->
+        <div class="graph-frame-container">
+          <!-- TradingView Live Real-Time Iframe -->
+          <div id="tvContainer" class="tv-container active">
+            <iframe 
+              id="tradingViewIframe" 
+              src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_widget&symbol=BINANCE%3ABTCUSDT&interval=60&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=0c101c&studies=RSI%40tv-basicstudies&theme=dark&style=1&timezone=Etc%2FUTC&locale=en" 
+              frameborder="0" 
+              allowtransparency="true" 
+              scrolling="no" 
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- Nexus AI Overlay Canvas Chart -->
+          <div id="aiChartContainer" class="ai-chart-container">
+            <canvas id="expandedAiCanvas"></canvas>
+            <div class="ai-overlay-legend">
+              <span class="legend-item legend-entry">Target Entry Zone</span>
+              <span class="legend-item legend-tp">Take-Profit Targets</span>
+              <span class="legend-item legend-sl">Stop-Loss Invalidation</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Trade Setup & Position Sizing Calculator -->
+        <div class="graph-trade-desk">
+          <div class="desk-verdict-col">
+            <span class="desk-label">LIVE AI CONFLUENCE VERDICT</span>
+            <div id="graphAiVerdict" class="desk-verdict-title text-green">🟢 STRONG BUY / INVEST NOW</div>
+            <span id="graphAiReason" class="desk-verdict-sub">RSI oversold rebound above 20 EMA with positive volume confluence.</span>
+          </div>
+
+          <div class="desk-calculator-col">
+            <div class="calc-input-wrap">
+              <label for="calcCapital">Trading Capital ($)</label>
+              <input type="number" id="calcCapital" value="1000" min="10" step="50" class="calc-input" />
+            </div>
+            <div class="calc-results-grid">
+              <div class="calc-metric">
+                <span class="c-label">Target TP1 Profit</span>
+                <span id="calcTp1" class="c-val text-green">+$45.00 (+4.5%)</span>
+              </div>
+              <div class="calc-metric">
+                <span class="c-label">Target TP2 Profit</span>
+                <span id="calcTp2" class="c-val text-green">+$95.00 (+9.5%)</span>
+              </div>
+              <div class="calc-metric">
+                <span class="c-label">Stop-Loss Risk</span>
+                <span id="calcSl" class="c-val text-red">-$38.00 (-3.8%)</span>
+              </div>
+              <div class="calc-metric">
+                <span class="c-label">Position Size</span>
+                <span id="calcPosSize" class="c-val text-cyan">0.0129 BTC</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Market Intelligence Sidebar -->
+      <aside class="market-sidebar" id="marketSidebar">
+        <!-- Coin Selector Pills -->
+        <div class="coin-selector-bar">
+          <button class="coin-pill active" data-symbol="BTC">BTC</button>
+          <button class="coin-pill" data-symbol="ETH">ETH</button>
+          <button class="coin-pill" data-symbol="SOL">SOL</button>
+          <button class="coin-pill" data-symbol="BNB">BNB</button>
+          <button class="coin-pill" data-symbol="XRP">XRP</button>
+          <button class="coin-pill" data-symbol="DOGE">DOGE</button>
+          <button class="coin-pill" data-symbol="ADA">ADA</button>
+          <button class="coin-pill" data-symbol="AVAX">AVAX</button>
+        </div>
+
+        <!-- Active Coin Real-time Stat Card -->
+        <div class="active-coin-card">
+          <div class="active-coin-top">
+            <span id="activeCoinName" class="active-coin-title">Bitcoin (BTC)</span>
+            <span id="activeCoinChange" class="active-coin-change bull-green">+2.45%</span>
+          </div>
+          <div id="activeCoinPrice" class="active-coin-price">$77,240.50</div>
+
+          <!-- Mini Chart Card -->
+          <div class="chart-container">
+            <div class="chart-header">
+              <span class="chart-title">1H Mini Chart</span>
+              <div class="chart-controls">
+                <button id="modeCandles" class="chart-mode-btn active" title="Candlesticks">Candles</button>
+                <button id="modeLine" class="chart-mode-btn" title="Line area">Line</button>
+                <button id="expandToLiveGraphBtn" class="chart-mode-btn expand-btn" title="Expand to Live Trading Graph">📈 Expand</button>
+              </div>
+            </div>
+            <div class="canvas-wrapper">
+              <canvas id="priceChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fear & Greed Card -->
+        <div class="sidebar-card fng-card">
+          <div class="sidebar-card-title">
+            <span>Market Sentiment Gauge</span>
+            <span class="fng-source">Alternative.me</span>
+          </div>
+          <div class="fng-meter-container">
+            <div class="fng-meter-bar">
+              <div id="fngFill" class="fng-meter-fill" style="width: 60%;"></div>
+            </div>
+            <div class="fng-meter-scale">
+              <span>0 (Extreme Fear)</span>
+              <span>50</span>
+              <span>100 (Greed)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Crypto News Sidebar -->
+        <div class="sidebar-card news-sidebar-card">
+          <div class="sidebar-card-title">
+            <span>⚡ Live Crypto News Stream</span>
+            <span class="live-pulse-badge">LIVE</span>
+          </div>
+          <div class="news-list" id="newsList">
+            <div class="news-skeleton">Fetching breaking headlines...</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Settings & API Key Modal -->
+    <div id="settingsModal" class="modal-backdrop">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>⚙️ Nexus AI Intelligence Settings</h3>
+          <button id="closeSettings" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="setting-group">
+            <label for="riskSelect">Risk Profiling Mode</label>
+            <select id="riskSelect" class="form-control">
+              <option value="conservative">Conservative (Strict RSI & Low Drawdown Focus)</option>
+              <option value="balanced" selected>Balanced (Standard Confluence & High R/R)</option>
+              <option value="aggressive">Aggressive (Breakouts & High Beta Momentum)</option>
+            </select>
+            <span class="setting-hint">Adjusts buy signal thresholds and stop-loss conservatism.</span>
+          </div>
+
+          <div class="setting-group">
+            <label for="providerSelect">AI Engine Model</label>
+            <select id="providerSelect" class="form-control">
+              <option value="local" selected>Built-in Autonomous Sentinel Engine (Zero-Setup, Free)</option>
+              <option value="gemini">Google Gemini API (Custom Key)</option>
+              <option value="openai">OpenAI GPT-4o (Custom Key)</option>
+            </select>
+          </div>
+
+          <div class="setting-group">
+            <label for="apiKeyInput">Custom API Key (Optional)</label>
+            <input type="password" id="apiKeyInput" class="form-control" placeholder="Enter API Key if using external provider..." />
+            <span class="setting-hint">Stored safely in your local browser storage.</span>
+          </div>
+
+          <div class="setting-group checkbox-group">
+            <label>
+              <input type="checkbox" id="soundToggle" checked>
+              <span>Enable futuristic trading sound effects</span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="saveSettings" class="btn btn-primary">Save Preferences</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
